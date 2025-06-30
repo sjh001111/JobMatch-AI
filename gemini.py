@@ -10,7 +10,7 @@ class DefaultSchema(BaseModel):
 
 
 class Gemini:
-    def __init__(self, api_key, model="gemini-2.5-pro"):
+    def __init__(self, api_key, model):
         self.client = genai.Client(api_key=api_key)
         self.model = model
 
@@ -34,7 +34,8 @@ class Gemini:
 async def main():
     load_dotenv()
     api_key = os.getenv('GEMINI_API_KEY')
-    gemini = Gemini(api_key)
+    model = "gemini-2.5-pro"
+    gemini = Gemini(api_key, model)
     for i in range(30):
         try:
             print(f"{i}: {await gemini.query('아무거나 말해봐라')}")
