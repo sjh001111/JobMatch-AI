@@ -1,8 +1,10 @@
 import asyncio
-from google import genai
-from dotenv import load_dotenv
 import os
+
+from dotenv import load_dotenv
+from google import genai
 from pydantic import BaseModel
+from google.genai import types
 
 
 class DefaultSchema(BaseModel):
@@ -18,30 +20,25 @@ class Gemini:
         response = await self.client.aio.models.generate_content(
             model=self.model,
             contents=contents,
-            # 이미지 예제
-            # contents=[
-            #     'Tell me a story based on this image',
-            #     Image.open(image_path)
-            # ]
-            config={
-                "response_mime_type": "application/json",
-                "response_schema": schema,
-            },
+            config=types.GenerateContentConfig(
+                system_instruction="Answer in Korean.",
+                response_mime_type="application/json", response_schema=schema
+            ),
         )
         return response.parsed
 
 
-async def main():
-    load_dotenv()
-    api_key = os.getenv('GEMINI_API_KEY')
-    model = "gemini-2.5-pro"
-    gemini = Gemini(api_key, model)
-    for i in range(30):
-        try:
-            print(f"{i}: {await gemini.query('아무거나 말해봐라')}")
-        except Exception as e:
-            print(f"Query {i} failed: {e}")
-
-
-if __name__ == "__main__":
-    asyncio.run(main())
+# async def main():
+#     load_dotenv()
+#     api_key = os.getenv("GEMINI_API_KEY")
+#     model = "gemini-2.5-pro"
+#     gemini = Gemini(api_key, model)
+#     for i in range(30):
+#         try:
+#             print(f"{i}: {await gemini.query('아무거나 말해봐라')}")
+#         except Exception as e:
+#             print(f"Query {i} failed: {e}")
+#
+#
+# if __name__ == "__main__":
+#     asyncio.run(main())
